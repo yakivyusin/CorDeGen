@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.Loader;
 
 namespace CorDeGen.Library
@@ -13,23 +14,24 @@ namespace CorDeGen.Library
         {
             var sourceCode = File.ReadAllText(fileInfo.FullName);
 
-            using (var pluginStream = new MemoryStream())
+            using var pluginStream = new MemoryStream();
+            var result = GenerateCode(sourceCode).Emit(pluginStream);
+
+            if (!result.Success)
             {
-                var result = GenerateCode(sourceCode).Emit(pluginStream);
+                var failures = result.Diagnostics
+                    .Where(diagnostic => diagnostic.IsWarningAsError || diagnostic.Severity == DiagnosticSeverity.Error);
 
-                if (!result.Success)
-                {
-                    // todo: provide exception
-                }
-
-                pluginStream.Seek(0, SeekOrigin.Begin);
-
-                var assemblyLoadContext = new AssemblyLoadContext("dynamic plugin");
-                var assembly = assemblyLoadContext.LoadFromStream(pluginStream);
-                var pluginType = assembly.GetExportedTypes()[0];
-
-                return new DynamicPlugin(Activator.CreateInstance(pluginType));
+                throw new CompilationException(failures);
             }
+
+            pluginStream.Seek(0, SeekOrigin.Begin);
+
+            var assemblyLoadContext = new AssemblyLoadContext("dynamic plugin");
+            var assembly = assemblyLoadContext.LoadFromStream(pluginStream);
+            var pluginType = assembly.GetExportedTypes()[0];
+
+            return new DynamicPlugin(Activator.CreateInstance(pluginType));
         }
 
         private static CSharpCompilation GenerateCode(string sourceCode)

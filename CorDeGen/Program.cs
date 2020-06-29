@@ -24,9 +24,19 @@ namespace CorDeGen
             {
                 Console.WriteLine("--output-directory option was not provided or such directory does not exist. Current directory will be used");
                 outputDirectory = new DirectoryInfo(".");
-            }    
+            }
 
-            var compiledPlugin = DynamicPluginLoader.Load(plugin);
+            DynamicPlugin compiledPlugin;
+            try
+            {
+                compiledPlugin = DynamicPluginLoader.Load(plugin);
+            }
+            catch (CompilationException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return;
+            }
+
             var corpusGenerator = new CorpusGenerator(termCount, compiledPlugin);
             var corpus = corpusGenerator.GetCorpus();
 
