@@ -6,6 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Default.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Default.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CorDeGen.Library\CorDeGen.Library.csproj" />
   </ItemGroup>
 
