@@ -46,7 +46,7 @@ namespace CorDeGen.Library
 
             for (int i = 0; i < distribution.Length; i++)
             {
-                var count = totalCount * (distribution[i] / totalProbability);
+                var count = totalCount * ((double)distribution[i] / totalProbability);
 
                 for (int j = 0; j < count; j++)
                 {

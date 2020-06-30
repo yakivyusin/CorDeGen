@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Loader;
@@ -40,12 +41,18 @@ namespace CorDeGen.Library
             var options = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest);
 
             var parsedSyntaxTree = SyntaxFactory.ParseSyntaxTree(codeString, options);
+            var rootAssemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
 
             var references = new MetadataReference[]
             {
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location)
+                MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(List<>).Assembly.Location),
+                MetadataReference.CreateFromFile(Path.Combine(rootAssemblyPath, "System.Runtime.dll")),
+                MetadataReference.CreateFromFile(Path.Combine(rootAssemblyPath, "mscorlib.dll")),
+                MetadataReference.CreateFromFile(Path.Combine(rootAssemblyPath, "System.dll")),
+                MetadataReference.CreateFromFile(Path.Combine(rootAssemblyPath, "System.Core.dll"))
             };
 
             return CSharpCompilation.Create("DynamicPlugin.dll",
