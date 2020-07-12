@@ -14,7 +14,7 @@ namespace CorDeGen.Benchmark
 
     public class Benchmark
     {
-        [Params(100, 1_000, 10_000, 100_000)]
+        [Params(100, 500, 2_500, 12_500, 62_500, 312_500)]
         public int N { get; set; }
 
         [Benchmark]
