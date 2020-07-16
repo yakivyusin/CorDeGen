@@ -22,6 +22,14 @@ namespace CorDeGen.KMeans
             var clusterer = new KMeansClusterer();
 
             var featurizedData = featurizer.Featurize(texts);
+
+#if BUG
+            for (int i = 0; i < featurizedData[0].Features.Length; i++)
+            {
+                featurizedData[0].Features[i] = 1f;
+            }
+#endif
+
             var clusteredData = clusterer.Clusterize(featurizedData, 2);
 
             textsDirectory.CreateSubdirectory("result");
